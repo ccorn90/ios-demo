@@ -27,7 +27,7 @@
 
 // List the log tags you want to log here.  Make sure you have a trailing comma!
 // If you want to log for ALL tags, leave this blank
-#define ACTIVE_LOG_TAGS @"none",
+#define ACTIVE_LOG_TAGS //@"none",
 //@"network",
 
 

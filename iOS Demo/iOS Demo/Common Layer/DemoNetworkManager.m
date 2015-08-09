@@ -14,7 +14,7 @@ NSString* const LOGTAG = @"network";
 
 // Constants used in case nothing is specified:
 double const kDefaultTimeoutSeconds = 8.0;
-double const kMaintenanceTimerInterval = 1.0;
+double const kMaintenanceTimerInterval = 0.25;
 int const kDefaultNumRetries = 3;
 
 
@@ -24,14 +24,25 @@ int const kDefaultNumRetries = 3;
 @property (nonatomic, retain) NSTimer* maintenanceTimer;
 @property (nonatomic, retain) NSMutableSet* allNetworkCalls;
 
+@property (nonatomic, retain) NetworkManagerStatistics* statistics;
+@property (nonatomic) UInt64 totalSuccessfulCalls;
+@property (nonatomic) double totalLatencySuccessfulCalls;
+
 @end
 
 @implementation DemoNetworkManager
+@synthesize maintenanceTimer = _maintenanceTimer;
+@synthesize allNetworkCalls = _allNetworkCalls;
+@synthesize statistics = _statistics;
+@synthesize totalSuccessfulCalls = _totalSuccessfulCalls;
+@synthesize totalLatencySuccessfulCalls = _totalLatencySuccessfulCalls;
 
 -(DemoNetworkManager*) init {
     if(self = [super init]) {
+        self.allNetworkCalls = [[NSMutableSet alloc] init];
         self.maintenanceTimer = [NSTimer scheduledTimerWithTimeInterval:kMaintenanceTimerInterval target:self
                                                                selector:@selector(maintenanceTimerFired) userInfo:nil repeats:YES];
+        self.statistics = [[NetworkManagerStatistics alloc] init];
     }
     return self;
 }
@@ -39,8 +50,28 @@ int const kDefaultNumRetries = 3;
 
 // Returns the current statistics of this NetworkManager:
 -(NetworkManagerStatistics*) currentStatistics {
-    // TODO
-    return nil;
+    NetworkManagerStatistics* retval = nil;
+    
+    @synchronized (self) {
+        retval = [self.statistics copy];
+        retval.date = [NSDate date];
+        
+        retval.numRetriesInFlight = retval.numCallsInFlight = 0;
+        retval.numCallsInFlight = self.allNetworkCalls.count;
+        for(NetworkCall* call in self.allNetworkCalls) {
+            if(call.numRetries > 0 && call.connection != nil) {
+                retval.numRetriesInFlight++;
+            }
+        }
+        
+        retval.totalSuccessfulCalls = self.totalSuccessfulCalls;
+        retval.meanAverageLatency = self.totalLatencySuccessfulCalls / ((double) self.totalSuccessfulCalls);
+        retval.totalFailedCalls = retval.failuresNoConnection + retval.failuresTimedOut
+                                + retval.failuresBadRequest   + retval.failuresBadServer
+                                + retval.failuresInternalError;
+    }
+    
+    return retval;
 }
 
 // These helpers are shortcuts to the methods below.  They build the URL
@@ -94,6 +125,12 @@ int const kDefaultNumRetries = 3;
     NetworkManagerError earlyCallbackError = NetworkManagerErrorNoError;
     BOOL makeStartedCallCallback = FALSE;
     
+    // Let's build a NetworkCall to track this connection:
+    NetworkCall* call = [[NetworkCall alloc] initWithManager:self delegate:delegate delegateContext:context timeout:timeout maxRetries:numRetries];
+    call.request = request;
+    call.urlString = request.URL.absoluteString;
+    call.runLoop = onMainThread ? [NSRunLoop mainRunLoop] : [NSRunLoop currentRunLoop];
+    
     @synchronized (self) {
         // Set up the timeout on the NSURLRequest... this is different than the timeout on the NetworkCall
         // object and in fact will probably never get encountered.  There's some evidance that it's not
@@ -103,16 +140,10 @@ int const kDefaultNumRetries = 3;
         
         // If there is no network connection or other issues, the below method will return NO and we'll fail early:
         if(![NSURLConnection canHandleRequest:request]) {
-            LogD(LOGTAG, @"NSURLConnection cannot handle request %@ ... probably no connection!", request);
+            LogD(LOGTAG, @"NSURLConnection cannot handle request %@ ... possibly no connection!", request);
             earlyCallbackError = NetworkManagerErrorNoConnection;
         } else {
-            // Let's build a NetworkCall to track this connection:
-            NetworkCall* call = [[NetworkCall alloc] initWithManager:self delegate:delegate delegateContext:context timeout:timeout maxRetries:numRetries];
-            call.request = request;
-            call.urlString = request.URL.absoluteString;
-            call.runLoop = onMainThread ? [NSRunLoop mainRunLoop] : [NSRunLoop currentRunLoop];
             [self.allNetworkCalls addObject:call];
-            
             [self startCallHelper:call];
             makeStartedCallCallback = TRUE;
             
@@ -122,9 +153,7 @@ int const kDefaultNumRetries = 3;
     
     // Outside the synchronized block, make callbacks as needed:
     if(earlyCallbackError != NetworkManagerErrorNoError) {
-        if(delegate != nil) {
-            [delegate networkManager:self didFail:context error:earlyCallbackError httpStatus:-1 data:nil];
-        }
+        [self makeFailureCallback:call httpCode:-1 networkManagerError:earlyCallbackError error:nil];
     } else if(makeStartedCallCallback) {
         if(delegate != nil) {
             if([delegate respondsToSelector:@selector(networkManager:didStartCall:)]) {
@@ -135,7 +164,17 @@ int const kDefaultNumRetries = 3;
 }
 
 -(void) cancelForDelegate:(id<NetworkManagerDelegate>)delegate withContext:(id)context {
-    // TODO
+    @synchronized (self) {
+        // TASK: The right way to structure this is to have a map (i.e. NSMutableDictionary) of
+        // delegates (weakly held!) to network calls.  This requires a little bit of finageling
+        // because the delegates are held weakly... but it can be done.  I'm not going to do
+        // that now, however, so we default to this O(n) search strategy.
+        for(NetworkCall* call in self.allNetworkCalls) {
+            if(call.delegate == delegate && call.delegateContext == context) {
+                [self unTrackCall:call];
+            }
+        }
+    }
 }
 
 
@@ -144,7 +183,7 @@ int const kDefaultNumRetries = 3;
 -(void) networkCall:(NetworkCall*)call didRecieveResponse:(NSURLResponse*)response {
     BOOL connectionIsValid = FALSE;
     BOOL shouldCallBackFailure = FALSE;
-    int httpCode = -1;
+    int httpCode = -100;
     int size = -1;
     NSDictionary* allHeaders = nil;
     
@@ -167,10 +206,15 @@ int const kDefaultNumRetries = 3;
                     
                     // let's parse the content-length really quick while we're here:
                     NSString* contentLengthString = [allHeaders valueForKey:@"Content-Length"];
-                    int tmp = -1;
-                    NSScanner* scanner = [[NSScanner alloc] initWithString:contentLengthString];
-                    if([scanner scanInt:&tmp]) {
-                        size = tmp;
+                    
+                    if(contentLengthString == nil) {
+                        LogI(@"DemoNetworkManager could not find Content-Length on call to URL %@", call.urlString);
+                    } else {
+                        int tmp = -1;
+                        NSScanner* scanner = [[NSScanner alloc] initWithString:contentLengthString];
+                        if([scanner scanInt:&tmp]) {
+                            size = tmp;
+                        }
                     }
                     
                     LogD(LOGTAG, @"Recieved %d response (Content-Length %d) from URL %@", httpCode, size, call.urlString);
@@ -186,7 +230,7 @@ int const kDefaultNumRetries = 3;
             // callbacks will stop and start over again with a new connection, so we don't have to
             // worry about an errant didFinishLoading call from this network call.
             if(errorOccured) {
-                shouldCallBackFailure = [self retryOrFail:call];
+                shouldCallBackFailure = [self retryOrFail:call withError:[self decodeError:httpCode error:nil hint:0]];
             }
             
         } else {
@@ -195,7 +239,7 @@ int const kDefaultNumRetries = 3;
     }
     
     if(shouldCallBackFailure) {
-        [self makeFailureCallback:call httpCode:httpCode error:nil];
+        [self makeFailureCallback:call httpCode:httpCode networkManagerError:0 error:nil];
     } else if(connectionIsValid && call.delegate != nil) {
         // call back saying we recieved the header:
         if([call.delegate respondsToSelector:@selector(networkManager:didLoadHeader:size:headers:)]) {
@@ -213,7 +257,11 @@ int const kDefaultNumRetries = 3;
             // that we won't get here unless the call has successfully passed didRecieveResponse without
             // hitting a retry-or-fail case.
             connectionIsValid = TRUE;
-            [self deleteCall:call];
+            [self unTrackCall:call];
+            
+            // now we can update some stats:
+            self.totalSuccessfulCalls ++;
+            self.totalLatencySuccessfulCalls += [[NSDate date] timeIntervalSinceDate:call.dateCallStarted];
         } else {
             LogW(LOGTAG, @"Recieved response to unbound connection wrapper %@!  URL is %@", call, call.urlString);
         }
@@ -234,7 +282,14 @@ int const kDefaultNumRetries = 3;
 }
 
 -(void) networkCall:(NetworkCall*)call didFailWithError:(NSError*)error {
-    // TODO
+    BOOL makeFailureCallback = FALSE;
+    @synchronized (self) {
+        makeFailureCallback = [self retryOrFail:call withError:[self decodeError:-1 error:error hint:0]];
+    }
+    
+    if(makeFailureCallback) {
+        [self makeFailureCallback:call httpCode:-1 networkManagerError:0 error:error];
+    }
 }
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!!
@@ -245,17 +300,46 @@ int const kDefaultNumRetries = 3;
 
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!!
-// Returns TRUE if the call should fail permanetly
--(BOOL) retryOrFail:(NetworkCall*)call {
-    // TODO!!!!!
-    return TRUE;
+// Returns TRUE if the call failed permanently, so that appropriate callbacks can be made.
+-(BOOL) retryOrFail:(NetworkCall*)call withError:(NetworkManagerError)error {
+    BOOL failedCall = TRUE;
+    if(call != nil) {
+        // For now, we only retry if there haven't been the max number of retries yet:
+        // TASK: It's possible to do some other stuff here, too, like making decisions
+        // about whether to retry based on the HTTP error code, etc.  But sometimes an
+        // overloaded server will return 404's when the resource is actually retrievable.
+        if(call.numRetries < call.maxRetries) {
+            // We're going to retry this call.  Increment numRetries
+            // by one and reset, then restart the call.
+            LogD(LOGTAG, @"Retrying call to %@ (%p).  Retry %d of %d", call.urlString, call, call.numRetries, call.maxRetries);
+            call.numRetries++;
+            [self clearInternalConnectionForCall:call];
+            [self startCallHelper:call];
+            failedCall = FALSE;
+            self.statistics.totalNumRetries++;
+        } else {
+            LogD(LOGTAG, @"Failing call to %@ (%p) after %d retries", call.urlString, call, call.numRetries);
+            [self unTrackCall:call];
+        }
+        
+        // Update some statistics:
+        switch (error) {
+            default: case NetworkManagerErrorNoError: break;
+            case NetworkManagerErrorNoConnection:   self.statistics.failuresNoConnection++; break;
+            case NetworkManagerErrorTimedOut:       self.statistics.failuresTimedOut++;     break;
+            case NetworkManagerErrorBadRequest:     self.statistics.failuresBadRequest++;   break;
+            case NetworkManagerErrorBadServer:      self.statistics.failuresBadServer++;    break;
+            case NetworkManagerErrorInternal:       self.statistics.failuresInternalError++;break;
+        }
+    }
+    return failedCall;
 }
 
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!!
 -(void) startCallHelper:(NetworkCall*)call {
     if(call.connection != nil) {
-        [self resetNetworkCallToBlank:call];
+        [self clearInternalConnectionForCall:call];
     }
     
     NSURLConnection* newConnection = [[NSURLConnection alloc] initWithRequest:call.request delegate:call startImmediately:FALSE];
@@ -270,7 +354,7 @@ int const kDefaultNumRetries = 3;
 
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!!
--(void) resetNetworkCallToBlank:(NetworkCall*)call {
+-(void) clearInternalConnectionForCall:(NetworkCall*)call {
     [call.connection cancel];
     call.connection = nil;
     call.data = [[NSMutableData alloc] init];
@@ -279,22 +363,47 @@ int const kDefaultNumRetries = 3;
 
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!!
--(void) deleteCall:(NetworkCall*)call {
-    [self resetNetworkCallToBlank:call];
+-(void) unTrackCall:(NetworkCall*)call {
+    [call.connection cancel];
     [self.allNetworkCalls removeObject:call];
 }
 
 
--(void) makeFailureCallback:(NetworkCall*)call httpCode:(int)httpCode error:(NSError*)error {
-    NetworkManagerError errorType = NetworkManagerErrorTimedOut;
-    
-    // Try to decode the error type:
-    if(httpCode >= 400 && httpCode < 500) {
-        errorType = NetworkManagerErrorBadRequest;
-    } else if (httpCode > 500) {
-        errorType = NetworkManagerErrorBadServer;
+// Pass a NetworkManagerError if you can determine what it is,
+// otherwise just pass what you can (http code, NSError) and
+// this method will try to figure it out.  Passing an HTTP code
+// of -100 indicates an internal error, so pass HTTP code of -1
+// to indicate no specific error.
+-(NetworkManagerError) decodeError:(int)httpCode error:(NSError*)error hint:(NetworkManagerError)hintErrorType {
+    if(hintErrorType == NetworkManagerErrorNoError) {
+        hintErrorType = NetworkManagerErrorTimedOut;
+        if(httpCode >= 400 && httpCode < 500) {
+            hintErrorType = NetworkManagerErrorBadRequest;
+        } else if (httpCode > 500) {
+            hintErrorType = NetworkManagerErrorBadServer;
+        }
+        // TASK: Parse other error types here.  It's be possible to pull apart the
+        // NSError to discover more about which NetworkManagerError to pass back.
+        // As an example, we'll check for one connection-offline error (CFNetwork
+        // code -1009).  Ideally we'd parse based on error codes instead of strings.
+        else if([error.domain isEqualToString:@"NSURLErrorDomain"]
+                && [[error.userInfo objectForKey:@"NSLocalizedDescription"] isEqualToString:@"The Internet connection appears to be offline."]) {
+            hintErrorType = NetworkManagerErrorNoConnection;
+        }
     }
-    // TASK: Parse other error types here!!!!!
+    
+    return hintErrorType;
+}
+
+
+
+// This helper should be called OUTSIDE the synchronized block, after you've
+// cleaned up and untracked the network call.
+-(void) makeFailureCallback:(NetworkCall*)call httpCode:(int)httpCode networkManagerError:(NetworkManagerError)errorType error:(NSError*)error {
+    
+    if(errorType == NetworkManagerErrorNoError) {
+        errorType = [self decodeError:httpCode error:error hint:NetworkManagerErrorNoError];
+    }
     
     // call back with failure:
     if(call.delegate != nil) {
@@ -320,9 +429,29 @@ int const kDefaultNumRetries = 3;
 // trying to do work all at the same time (the system has been known to terminate apps
 // for taking too much CPU time right after resuming from the background).
 -(void) maintenanceTimerFired {
-    // TODO: grab the lock, loop through all calls and see if any are above their timeout threshold.
-    // Call retryOrFail on each of those and make a list of all the cals that need to fail.
-    // Then call makeFailureCallback on each one OUTSIDE the sychronized block.
+    NSMutableArray* callsToFail = [[NSMutableArray alloc] init];
+    
+    @synchronized (self) {
+        NSDate* now = [NSDate date];
+        double delta = 0.0;
+        
+        // Determine if any calls need to be retried (or failed) by looping
+        // through and checking the timeout interval.
+        for(NetworkCall* call in self.allNetworkCalls) {
+            delta = [now timeIntervalSinceDate:call.dateCallStarted];
+            if(call.dateCallStarted != nil && delta > call.timeout) {
+                LogD(LOGTAG, @"Call to %@ (%p) has timed out after %lf seconds.", call.urlString, call, delta);
+                if([self retryOrFail:call withError:NetworkManagerErrorTimedOut]) {
+                    [callsToFail addObject:call];
+                }
+            }
+        }
+    }
+    
+    // If any calls were failed in the block above, call back to their delegates:
+    for(NetworkCall* call in callsToFail) {
+        [self makeFailureCallback:call httpCode:-1 networkManagerError:NetworkManagerErrorTimedOut error:nil];
+    }
 }
 
 

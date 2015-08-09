@@ -7,9 +7,10 @@
 //
 
 #import "Singletons.h"
+#import <UIKit/UIKit.h>
 
 #import "CommonSingletons.h"
-#import <UIKit/UIKit.h>
+#import "CommonLayerDemo.h"
 
 // TASK: Should this be __weak?  I dunno yet... it seems like it would be
 // held weakly by the system, so we'd need to retain it.  But then, it
@@ -19,6 +20,7 @@ Singletons* __globalDelegateRef = nil;
 @interface Singletons ()
 
 @property (nonatomic, retain) CommonSingletons* commonSingletons;
+@property (nonatomic, retain) CommonLayerDemo*  demo;
 
 @end
 
@@ -58,9 +60,16 @@ Singletons* __globalDelegateRef = nil;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     // This makes the window visible and actually initializes the UI:
-    // TODO: We'll need a view controller eventually!!!
-    [self.window setRootViewController:nil];
+    // TODO: Eventually we'll want to make a view heirarchy that actually does something.
+    [self.window setRootViewController:[[UIViewController alloc] init]];
     [self.window makeKeyAndVisible];
+    
+    
+    // Start the demo.  We'll do this asynchronously after 100ms so the main thread can continue right now.
+    self.demo = [[CommonLayerDemo alloc] init];
+    dispatch_after(0.1, dispatch_get_main_queue(), ^{
+        [self.demo start];
+    });
     
     return YES;
 }

@@ -41,7 +41,9 @@
              withContext:(id)context;
 
 
-// Cancel a call.  Note that not all managers will implement this!
+// Cancel a call.  Note that not all managers will implement this!  The manager
+// is also not required to call any more delegate methods once cancelForDelegate
+// is called, so make sure to do your own cleanup!
 @optional
 -(void) cancelForDelegate:(id<NetworkManagerDelegate>)delegate withContext:(id)context;
 
@@ -78,7 +80,9 @@
                  error:(NetworkManagerError)errorType httpStatus:(int)httpStatus data:(NSData*)data;
 
 // Called when a call is done, either by error or by success.  You'll always
-// get this callback, preceded either by didSucceed or didFail.
+// get this callback, preceded either by didSucceed or didFail, UNLESS you
+// cancel the call using the cancelForDelegate method.  If a call is canceled,
+// the manager is not obligated to do any more callbacks.
 @optional
 -(void) networkManager:(id<AbstractNetworkManager>)networkManager didFinish:(id)context;
 
