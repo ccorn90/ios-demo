@@ -26,7 +26,7 @@
 // Call this to construct an NSMutableURLRequest object that you can
 // modify as you choose.  Then pass it to the startNetworkCall method.
 @required
--(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString;
+-(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString forRequestType:(NSString*)requestType;
 
 // Starts a network call for the given URL request.  Specify a delegate
 // and a context if you want to have a specific bit of metadata returned

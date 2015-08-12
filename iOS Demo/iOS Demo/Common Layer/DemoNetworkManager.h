@@ -28,7 +28,7 @@
 // These are implemented from AbstractNetworkManager:
 -(void) get:(NSString*)urlString  delegate:(id<NetworkManagerDelegate>)delegate context:(id)context;
 -(void) post:(NSString*)urlString delegate:(id<NetworkManagerDelegate>)delegate context:(id)context data:(NSData*)data;
--(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString;
+-(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString forRequestType:(NSString*)requestType;
 -(void) startNetworkCall:(NSMutableURLRequest*)request
             withDelegate:(id<NetworkManagerDelegate>)delegate
             onMainThread:(BOOL)onMainThread

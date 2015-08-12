@@ -10,7 +10,7 @@
 #import "NetworkCall.h"
 #import "Logging.h"
 
-NSString* const LOGTAG = @"network";
+NSString* const LOGTAG_DNM = @"network";
 
 // Constants used in case nothing is specified:
 double const kDefaultTimeoutSeconds = 8.0;
@@ -78,14 +78,12 @@ int const kDefaultNumRetries = 3;
 // request and start the call for you.  The downside is that you can't
 // set the HTTP headers or do any other special changes.
 -(void) get:(NSString*)urlString delegate:(id<NetworkManagerDelegate>)delegate context:(id)context {
-    NSMutableURLRequest* request = [self buildURLRequest:urlString];
-    [request setHTTPMethod:@"GET"];
+    NSMutableURLRequest* request = [self buildURLRequest:urlString forRequestType:@"GET"];
     
     [self startNetworkCall:request withDelegate:delegate onMainThread:YES withTimeout:kDefaultTimeoutSeconds withNumRetries:kDefaultNumRetries withContext:context];
 }
 -(void) post:(NSString*)urlString delegate:(id<NetworkManagerDelegate>)delegate context:(id)context data:(NSData*)data {
-    NSMutableURLRequest* request = [self buildURLRequest:urlString];
-    [request setHTTPMethod:@"POST"];
+    NSMutableURLRequest* request = [self buildURLRequest:urlString forRequestType:@"POST"];
     if(data != nil) [request setHTTPBody:data];
     
     [self startNetworkCall:request withDelegate:delegate onMainThread:YES withTimeout:kDefaultTimeoutSeconds withNumRetries:kDefaultNumRetries withContext:context];
@@ -93,7 +91,7 @@ int const kDefaultNumRetries = 3;
 
 // Call this to construct an NSMutableURLRequest object that you can
 // modify as you choose.  Then pass it to the startNetworkCall method.
--(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString {
+-(NSMutableURLRequest*) buildURLRequest:(NSString*)urlString forRequestType:(NSString*)requestType {
     NSMutableURLRequest* request = nil;
     
     if([urlString length] != 0) {
@@ -108,6 +106,14 @@ int const kDefaultNumRetries = 3;
             // Some other params.  Connection=close increases reliability because the underlying NSURLConnection seems to never let go of calls sometimes.
             [request setValue:@"close" forHTTPHeaderField:@"Connection"];
             [request setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+            
+            // Set the request type.  Valid options are "GET" "HEAD" "POST" "PUT" "DELETE"
+            [request setHTTPMethod:@"GET"];
+            if([requestType isEqualToString:@"HEAD"] || [requestType isEqualToString:@"POST"] || [requestType isEqualToString:@"PUT"] || [requestType isEqualToString:@"DELETE"]) {
+                [request setHTTPMethod:requestType];
+            } else {
+                LogW(LOGTAG_DNM, @"Request made with unsupported method %@!  Defaulting to GET request.  URL is %@", requestType, urlString);
+            }
         }
     }
     
@@ -140,14 +146,14 @@ int const kDefaultNumRetries = 3;
         
         // If there is no network connection or other issues, the below method will return NO and we'll fail early:
         if(![NSURLConnection canHandleRequest:request]) {
-            LogD(LOGTAG, @"NSURLConnection cannot handle request %@ ... possibly no connection!", request);
+            LogD(LOGTAG_DNM, @"NSURLConnection cannot handle request %@ ... possibly no connection!", request);
             earlyCallbackError = NetworkManagerErrorNoConnection;
         } else {
             [self.allNetworkCalls addObject:call];
             [self startCallHelper:call];
             makeStartedCallCallback = TRUE;
             
-            LogD(LOGTAG, @"Started call: %@ %@", request.HTTPMethod, [request.URL absoluteString]);
+            LogD(LOGTAG_DNM, @"Started call: %@ %@", request.HTTPMethod, [request.URL absoluteString]);
         }
     }
     
@@ -217,11 +223,11 @@ int const kDefaultNumRetries = 3;
                         }
                     }
                     
-                    LogD(LOGTAG, @"Recieved %d response (Content-Length %d) from URL %@", httpCode, size, call.urlString);
+                    LogD(LOGTAG_DNM, @"Recieved %d response (Content-Length %d) from URL %@", httpCode, size, call.urlString);
                 }
                 
             } else {
-                LogE(LOGTAG, @"Recieved response that was NOT an HTTP response: %@!  URL is %@", response, call.urlString);
+                LogE(LOGTAG_DNM, @"Recieved response that was NOT an HTTP response: %@!  URL is %@", response, call.urlString);
                 errorOccured = TRUE;
             }
             
@@ -234,7 +240,7 @@ int const kDefaultNumRetries = 3;
             }
             
         } else {
-            LogW(LOGTAG, @"Recieved response to unbound connection wrapper %@!  URL is %@", call, call.urlString);
+            LogW(LOGTAG_DNM, @"Recieved response to unbound connection wrapper %@!  URL is %@", call, call.urlString);
         }
     }
     
@@ -263,7 +269,7 @@ int const kDefaultNumRetries = 3;
             self.totalSuccessfulCalls ++;
             self.totalLatencySuccessfulCalls += [[NSDate date] timeIntervalSinceDate:call.dateCallStarted];
         } else {
-            LogW(LOGTAG, @"Recieved response to unbound connection wrapper %@!  URL is %@", call, call.urlString);
+            LogW(LOGTAG_DNM, @"Recieved response to unbound connection wrapper %@!  URL is %@", call, call.urlString);
         }
     }
     
@@ -311,14 +317,14 @@ int const kDefaultNumRetries = 3;
         if(call.numRetries < call.maxRetries) {
             // We're going to retry this call.  Increment numRetries
             // by one and reset, then restart the call.
-            LogD(LOGTAG, @"Retrying call to %@ (%p).  Retry %d of %d", call.urlString, call, call.numRetries, call.maxRetries);
+            LogD(LOGTAG_DNM, @"Retrying call to %@ (%p).  Retry %d of %d", call.urlString, call, call.numRetries, call.maxRetries);
             call.numRetries++;
             [self clearInternalConnectionForCall:call];
             [self startCallHelper:call];
             failedCall = FALSE;
             self.statistics.totalNumRetries++;
         } else {
-            LogD(LOGTAG, @"Failing call to %@ (%p) after %d retries", call.urlString, call, call.numRetries);
+            LogD(LOGTAG_DNM, @"Failing call to %@ (%p) after %d retries", call.urlString, call, call.numRetries);
             [self unTrackCall:call];
         }
         
@@ -440,7 +446,7 @@ int const kDefaultNumRetries = 3;
         for(NetworkCall* call in self.allNetworkCalls) {
             delta = [now timeIntervalSinceDate:call.dateCallStarted];
             if(call.dateCallStarted != nil && delta > call.timeout) {
-                LogD(LOGTAG, @"Call to %@ (%p) has timed out after %lf seconds.", call.urlString, call, delta);
+                LogD(LOGTAG_DNM, @"Call to %@ (%p) has timed out after %lf seconds.", call.urlString, call, delta);
                 if([self retryOrFail:call withError:NetworkManagerErrorTimedOut]) {
                     [callsToFail addObject:call];
                 }
