@@ -28,20 +28,21 @@ int const kDefaultNumRetries = 3;
 @property (nonatomic) UInt64 totalSuccessfulCalls;
 @property (nonatomic) double totalLatencySuccessfulCalls;
 
+// This is for testing only - the test framework can ask us to use a different
+// class than NSURLConnection (really, an NSURLConnection subclass) to test:
+@property (nonatomic, retain) Class testingURLConnectionClass;
+
 @end
 
 @implementation DemoNetworkManager
-@synthesize maintenanceTimer = _maintenanceTimer;
-@synthesize allNetworkCalls = _allNetworkCalls;
-@synthesize statistics = _statistics;
-@synthesize totalSuccessfulCalls = _totalSuccessfulCalls;
-@synthesize totalLatencySuccessfulCalls = _totalLatencySuccessfulCalls;
 
 -(DemoNetworkManager*) init {
     if(self = [super init]) {
         self.allNetworkCalls = [[NSMutableSet alloc] init];
         self.maintenanceTimer = [NSTimer scheduledTimerWithTimeInterval:kMaintenanceTimerInterval target:self
                                                                selector:@selector(maintenanceTimerFired) userInfo:nil repeats:YES];
+        
+        self.testingURLConnectionClass = nil;
         self.statistics = [[NetworkManagerStatistics alloc] init];
     }
     return self;
@@ -348,14 +349,27 @@ int const kDefaultNumRetries = 3;
         [self clearInternalConnectionForCall:call];
     }
     
-    NSURLConnection* newConnection = [[NSURLConnection alloc] initWithRequest:call.request delegate:call startImmediately:FALSE];
+    NSURLConnection* newConnection = nil;
+    
+    // We have the opportunity to use a dummy NSURLConnection subclass to test.  The following
+    // relies on the TESTING macro being set.  Only do this in testing!!!
+#ifdef TESTING
+    if(self.testingURLConnectionClass != nil) {
+        LogW(@"network", @"WARNING WARNING WARNING - Substituting class %@ for NSURLConnection in DemoNetworkManager!  You'd better be testing!", self.testingURLConnectionClass);
+        newConnection = [[self.testingURLConnectionClass alloc] initWithRequest:call.request delegate:call startImmediately:FALSE];
+    }
+#endif
+    
+    if(newConnection == nil) {
+        newConnection = [[NSURLConnection alloc] initWithRequest:call.request delegate:call startImmediately:FALSE];
+    }
     [call setConnection:newConnection];
     NSRunLoop* runloop = call.runLoop;
     [newConnection scheduleInRunLoop:runloop forMode:NSRunLoopCommonModes];
     
     // Finally, we can start this connection:
-    [newConnection start];
     call.dateCallStarted = [NSDate date];
+    [newConnection start];
 }
 
 
@@ -460,6 +474,18 @@ int const kDefaultNumRetries = 3;
     }
 }
 
+
+// This is a hook for testing.  It allows the test framework to specify a class for the
+// networkManager to use instead of NSURLConnection for its insides.  Returns FALSE if
+// the input was ignored.
+-(BOOL) overrideTestingURLConnectionClass:(Class)testingURLConnectionClass {
+#ifdef TESTING
+    self.testingURLConnectionClass = testingURLConnectionClass;
+    return TRUE;
+#else 
+    return FALSE;
+#endif // ifdef TESTING
+}
 
 
 

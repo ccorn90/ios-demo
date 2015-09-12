@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8315F9901B9E768C007C8384 /* NKURLConnectionBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8315F98F1B9E768C007C8384 /* NKURLConnectionBridge.m */; };
+		8315F9941B9E78B1007C8384 /* NKURLConnectionBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8315F9931B9E78B1007C8384 /* NKURLConnectionBridgeTests.m */; };
 		831E96FF1B751BE5000DA094 /* CommonLayerDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 831E96FE1B751BE5000DA094 /* CommonLayerDemo.m */; };
+		8323491A1BA33C7F000E97A5 /* TestSharedThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 832349191BA33C7F000E97A5 /* TestSharedThreadPool.m */; };
 		8349F5F61B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8349F5F51B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m */; };
 		8349F5F91B7BEDF400BEB28F /* NetworkTransactionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8349F5F81B7BEDF400BEB28F /* NetworkTransactionManager.m */; };
 		8349F5FE1B7BF0E800BEB28F /* AbstractDataObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8349F5FD1B7BF0E800BEB28F /* AbstractDataObjectManager.m */; };
@@ -16,17 +19,40 @@
 		835E6CD21B743D02009CAB53 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 835E6CD11B743D02009CAB53 /* Images.xcassets */; };
 		835E6CF01B743DC2009CAB53 /* CoreDataCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6CEF1B743DC2009CAB53 /* CoreDataCoordinator.m */; };
 		835E6CF31B743DF3009CAB53 /* Singletons.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6CF21B743DF3009CAB53 /* Singletons.m */; };
-		835E6CF51B743E70009CAB53 /* fileheader.txt in Resources */ = {isa = PBXBuildFile; fileRef = 835E6CF41B743E70009CAB53 /* fileheader.txt */; };
 		835E6CF91B743F06009CAB53 /* CommonSingletons.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6CF81B743F06009CAB53 /* CommonSingletons.m */; };
 		835E6D001B747182009CAB53 /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6CFF1B747182009CAB53 /* Logging.m */; };
 		835E6D061B7472FA009CAB53 /* DemoNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6D051B7472FA009CAB53 /* DemoNetworkManager.m */; };
 		835E6D091B74745E009CAB53 /* NetworkManagerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6D081B74745E009CAB53 /* NetworkManagerStatistics.m */; };
 		835E6D0C1B747900009CAB53 /* NetworkCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 835E6D0B1B747900009CAB53 /* NetworkCall.m */; };
+		837C91E31BA0CAD8005016E6 /* WeakTargetTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 837C91E21BA0CAD8005016E6 /* WeakTargetTimer.m */; };
+		837C91E61BA0D2B2005016E6 /* SharedThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 837C91E51BA0D2B2005016E6 /* SharedThreadPool.m */; };
+		838E57731B9E25410067FE07 /* TestNetworkTransactionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 838E57721B9E25410067FE07 /* TestNetworkTransactionManager.m */; };
+		838E57751B9E3A820067FE07 /* TestAbstractNetworkManagerWithNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 838E57741B9E3A820067FE07 /* TestAbstractNetworkManagerWithNSURLConnection.m */; };
+		838E57781B9E3B1F0067FE07 /* OverrideURLConnectionTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 838E57771B9E3B1F0067FE07 /* OverrideURLConnectionTester.m */; };
+		83CB47191B98EFB800BE71EA /* NKCallBehaviorURLRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CB47181B98EFB800BE71EA /* NKCallBehaviorURLRequest.m */; };
+		83CB471C1B98EFCE00BE71EA /* NKNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CB471B1B98EFCE00BE71EA /* NKNetworkManager.m */; };
+		83CDA7971B972E1E000E4645 /* JSONHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CDA7961B972E1E000E4645 /* JSONHelpers.m */; };
+		83E589AE1B925506007C2EEC /* UIHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E589AD1B925506007C2EEC /* UIHelpers.m */; };
+		83E589B71B925720007C2EEC /* UIHelpersSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E589B61B925720007C2EEC /* UIHelpersSwift.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		839BA6201B9E238D0036FF9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 835E6CB61B743D02009CAB53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 835E6CBD1B743D02009CAB53;
+			remoteInfo = "iOS Demo";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		8315F98E1B9E768C007C8384 /* NKURLConnectionBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NKURLConnectionBridge.h; path = "Common Layer/NKURLConnectionBridge.h"; sourceTree = "<group>"; };
+		8315F98F1B9E768C007C8384 /* NKURLConnectionBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NKURLConnectionBridge.m; path = "Common Layer/NKURLConnectionBridge.m"; sourceTree = "<group>"; };
+		8315F9931B9E78B1007C8384 /* NKURLConnectionBridgeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NKURLConnectionBridgeTests.m; sourceTree = "<group>"; };
 		831E96FD1B751BE5000DA094 /* CommonLayerDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommonLayerDemo.h; path = "Application Layer/CommonLayerDemo.h"; sourceTree = "<group>"; };
 		831E96FE1B751BE5000DA094 /* CommonLayerDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CommonLayerDemo.m; path = "Application Layer/CommonLayerDemo.m"; sourceTree = "<group>"; };
+		832349191BA33C7F000E97A5 /* TestSharedThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestSharedThreadPool.m; sourceTree = "<group>"; };
 		8349F5F41B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AbstractRemoteFetchExecutor.h; path = "Common Layer/AbstractRemoteFetchExecutor.h"; sourceTree = "<group>"; };
 		8349F5F51B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AbstractRemoteFetchExecutor.m; path = "Common Layer/AbstractRemoteFetchExecutor.m"; sourceTree = "<group>"; };
 		8349F5F71B7BEDF400BEB28F /* NetworkTransactionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetworkTransactionManager.h; path = "Common Layer/NetworkTransactionManager.h"; sourceTree = "<group>"; };
@@ -56,6 +82,26 @@
 		835E6D081B74745E009CAB53 /* NetworkManagerStatistics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetworkManagerStatistics.m; path = "Common Layer/NetworkManagerStatistics.m"; sourceTree = "<group>"; };
 		835E6D0A1B747900009CAB53 /* NetworkCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetworkCall.h; path = "Common Layer/NetworkCall.h"; sourceTree = "<group>"; };
 		835E6D0B1B747900009CAB53 /* NetworkCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NetworkCall.m; path = "Common Layer/NetworkCall.m"; sourceTree = "<group>"; };
+		837C91E11BA0CAD8005016E6 /* WeakTargetTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeakTargetTimer.h; path = "Common Layer/WeakTargetTimer.h"; sourceTree = "<group>"; };
+		837C91E21BA0CAD8005016E6 /* WeakTargetTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WeakTargetTimer.m; path = "Common Layer/WeakTargetTimer.m"; sourceTree = "<group>"; };
+		837C91E41BA0D2B2005016E6 /* SharedThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharedThreadPool.h; path = "Common Layer/SharedThreadPool.h"; sourceTree = "<group>"; };
+		837C91E51BA0D2B2005016E6 /* SharedThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharedThreadPool.m; path = "Common Layer/SharedThreadPool.m"; sourceTree = "<group>"; };
+		838E57721B9E25410067FE07 /* TestNetworkTransactionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestNetworkTransactionManager.m; sourceTree = "<group>"; };
+		838E57741B9E3A820067FE07 /* TestAbstractNetworkManagerWithNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAbstractNetworkManagerWithNSURLConnection.m; sourceTree = "<group>"; };
+		838E57761B9E3B1F0067FE07 /* OverrideURLConnectionTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OverrideURLConnectionTester.h; sourceTree = "<group>"; };
+		838E57771B9E3B1F0067FE07 /* OverrideURLConnectionTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OverrideURLConnectionTester.m; sourceTree = "<group>"; };
+		839BA61A1B9E238D0036FF9E /* iOS Demo Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iOS Demo Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		839BA61D1B9E238D0036FF9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		83CB47171B98EFB800BE71EA /* NKCallBehaviorURLRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NKCallBehaviorURLRequest.h; path = "Common Layer/NKCallBehaviorURLRequest.h"; sourceTree = "<group>"; };
+		83CB47181B98EFB800BE71EA /* NKCallBehaviorURLRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NKCallBehaviorURLRequest.m; path = "Common Layer/NKCallBehaviorURLRequest.m"; sourceTree = "<group>"; };
+		83CB471A1B98EFCE00BE71EA /* NKNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NKNetworkManager.h; path = "Common Layer/NKNetworkManager.h"; sourceTree = "<group>"; };
+		83CB471B1B98EFCE00BE71EA /* NKNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NKNetworkManager.m; path = "Common Layer/NKNetworkManager.m"; sourceTree = "<group>"; };
+		83CDA7951B972E1E000E4645 /* JSONHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONHelpers.h; path = "Common Layer/JSONHelpers.h"; sourceTree = "<group>"; };
+		83CDA7961B972E1E000E4645 /* JSONHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONHelpers.m; path = "Common Layer/JSONHelpers.m"; sourceTree = "<group>"; };
+		83E589AC1B925506007C2EEC /* UIHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIHelpers.h; path = "Common Layer/UIHelpers.h"; sourceTree = "<group>"; };
+		83E589AD1B925506007C2EEC /* UIHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIHelpers.m; path = "Common Layer/UIHelpers.m"; sourceTree = "<group>"; };
+		83E589B51B92571F007C2EEC /* iOS Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS Demo-Bridging-Header.h"; sourceTree = "<group>"; };
+		83E589B61B925720007C2EEC /* UIHelpersSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIHelpersSwift.swift; sourceTree = "<group>"; };
 		83ED31A81B748C30003357E3 /* NetworkManagerEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetworkManagerEnums.h; path = "Common Layer/NetworkManagerEnums.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,19 +113,42 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		839BA6171B9E238D0036FF9E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8315F9911B9E76F5007C8384 /* Commin */ = {
+			isa = PBXGroup;
+			children = (
+				838E57721B9E25410067FE07 /* TestNetworkTransactionManager.m */,
+				838E57741B9E3A820067FE07 /* TestAbstractNetworkManagerWithNSURLConnection.m */,
+				838E57761B9E3B1F0067FE07 /* OverrideURLConnectionTester.h */,
+				838E57771B9E3B1F0067FE07 /* OverrideURLConnectionTester.m */,
+				832349191BA33C7F000E97A5 /* TestSharedThreadPool.m */,
+			);
+			name = Commin;
+			sourceTree = "<group>";
+		};
+		8315F9921B9E7701007C8384 /* NetworkManagerImpl */ = {
+			isa = PBXGroup;
+			children = (
+				8315F9931B9E78B1007C8384 /* NKURLConnectionBridgeTests.m */,
+			);
+			name = NetworkManagerImpl;
+			sourceTree = "<group>";
+		};
 		8349F5F31B7BECA700BEB28F /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				8349F5FF1B7BF39500BEB28F /* AbstractCoreDataCoordinator.h */,
 				8349F5FA1B7BF0CB00BEB28F /* Local Managed Objects */,
 				8349F5FB1B7BF0D600BEB28F /* Remote */,
-				8349F5F41B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.h */,
-				8349F5F51B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m */,
-				8349F5F71B7BEDF400BEB28F /* NetworkTransactionManager.h */,
-				8349F5F81B7BEDF400BEB28F /* NetworkTransactionManager.m */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -96,6 +165,8 @@
 		8349F5FB1B7BF0D600BEB28F /* Remote */ = {
 			isa = PBXGroup;
 			children = (
+				8349F5F41B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.h */,
+				8349F5F51B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m */,
 			);
 			name = Remote;
 			sourceTree = "<group>";
@@ -104,6 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				835E6CC01B743D02009CAB53 /* iOS Demo */,
+				839BA61B1B9E238D0036FF9E /* iOS Demo Tests */,
 				835E6CBF1B743D02009CAB53 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -112,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				835E6CBE1B743D02009CAB53 /* iOS Demo.app */,
+				839BA61A1B9E238D0036FF9E /* iOS Demo Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,6 +204,7 @@
 		835E6CC11B743D02009CAB53 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				83E589B51B92571F007C2EEC /* iOS Demo-Bridging-Header.h */,
 				835E6CC21B743D02009CAB53 /* Info.plist */,
 				835E6CC31B743D02009CAB53 /* main.m */,
 				835E6CF41B743E70009CAB53 /* fileheader.txt */,
@@ -149,9 +223,11 @@
 		835E6CEC1B743D62009CAB53 /* Common Layer */ = {
 			isa = PBXGroup;
 			children = (
+				837C91E01BA0CAC7005016E6 /* Util */,
 				835E6CF61B743EEB009CAB53 /* System */,
 				835E6CFD1B746D59009CAB53 /* Network */,
 				8349F5F31B7BECA700BEB28F /* Data */,
+				83CDA7941B972E08000E4645 /* Helpers */,
 			);
 			name = "Common Layer";
 			sourceTree = "<group>";
@@ -184,8 +260,47 @@
 		835E6CFD1B746D59009CAB53 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				83CB47131B98EF0900BE71EA /* Abstract */,
+				83CB47141B98EF2600BE71EA /* DemoNetworkManagerImpl */,
+				83CB47161B98EF6F00BE71EA /* NetworkManagerImpl */,
+				83CB47151B98EF3200BE71EA /* Transaction */,
+			);
+			name = Network;
+			sourceTree = "<group>";
+		};
+		837C91E01BA0CAC7005016E6 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				837C91E11BA0CAD8005016E6 /* WeakTargetTimer.h */,
+				837C91E21BA0CAD8005016E6 /* WeakTargetTimer.m */,
+				837C91E41BA0D2B2005016E6 /* SharedThreadPool.h */,
+				837C91E51BA0D2B2005016E6 /* SharedThreadPool.m */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
+		839BA61B1B9E238D0036FF9E /* iOS Demo Tests */ = {
+			isa = PBXGroup;
+			children = (
+				8315F9921B9E7701007C8384 /* NetworkManagerImpl */,
+				8315F9911B9E76F5007C8384 /* Commin */,
+				839BA61D1B9E238D0036FF9E /* Info.plist */,
+			);
+			path = "iOS Demo Tests";
+			sourceTree = "<group>";
+		};
+		83CB47131B98EF0900BE71EA /* Abstract */ = {
+			isa = PBXGroup;
+			children = (
 				835E6CFB1B746BAA009CAB53 /* AbstractNetworkManager.h */,
 				83ED31A81B748C30003357E3 /* NetworkManagerEnums.h */,
+			);
+			name = Abstract;
+			sourceTree = "<group>";
+		};
+		83CB47141B98EF2600BE71EA /* DemoNetworkManagerImpl */ = {
+			isa = PBXGroup;
+			children = (
 				835E6D041B7472FA009CAB53 /* DemoNetworkManager.h */,
 				835E6D051B7472FA009CAB53 /* DemoNetworkManager.m */,
 				835E6D071B74745E009CAB53 /* NetworkManagerStatistics.h */,
@@ -193,7 +308,41 @@
 				835E6D0A1B747900009CAB53 /* NetworkCall.h */,
 				835E6D0B1B747900009CAB53 /* NetworkCall.m */,
 			);
-			name = Network;
+			name = DemoNetworkManagerImpl;
+			sourceTree = "<group>";
+		};
+		83CB47151B98EF3200BE71EA /* Transaction */ = {
+			isa = PBXGroup;
+			children = (
+				8349F5F71B7BEDF400BEB28F /* NetworkTransactionManager.h */,
+				8349F5F81B7BEDF400BEB28F /* NetworkTransactionManager.m */,
+			);
+			name = Transaction;
+			sourceTree = "<group>";
+		};
+		83CB47161B98EF6F00BE71EA /* NetworkManagerImpl */ = {
+			isa = PBXGroup;
+			children = (
+				83CB47171B98EFB800BE71EA /* NKCallBehaviorURLRequest.h */,
+				83CB47181B98EFB800BE71EA /* NKCallBehaviorURLRequest.m */,
+				83CB471A1B98EFCE00BE71EA /* NKNetworkManager.h */,
+				83CB471B1B98EFCE00BE71EA /* NKNetworkManager.m */,
+				8315F98E1B9E768C007C8384 /* NKURLConnectionBridge.h */,
+				8315F98F1B9E768C007C8384 /* NKURLConnectionBridge.m */,
+			);
+			name = NetworkManagerImpl;
+			sourceTree = "<group>";
+		};
+		83CDA7941B972E08000E4645 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				83E589AC1B925506007C2EEC /* UIHelpers.h */,
+				83E589AD1B925506007C2EEC /* UIHelpers.m */,
+				83E589B61B925720007C2EEC /* UIHelpersSwift.swift */,
+				83CDA7951B972E1E000E4645 /* JSONHelpers.h */,
+				83CDA7961B972E1E000E4645 /* JSONHelpers.m */,
+			);
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -216,6 +365,24 @@
 			productReference = 835E6CBE1B743D02009CAB53 /* iOS Demo.app */;
 			productType = "com.apple.product-type.application";
 		};
+		839BA6191B9E238D0036FF9E /* iOS Demo Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 839BA6221B9E238D0036FF9E /* Build configuration list for PBXNativeTarget "iOS Demo Tests" */;
+			buildPhases = (
+				839BA6161B9E238D0036FF9E /* Sources */,
+				839BA6171B9E238D0036FF9E /* Frameworks */,
+				839BA6181B9E238D0036FF9E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				839BA6211B9E238D0036FF9E /* PBXTargetDependency */,
+			);
+			name = "iOS Demo Tests";
+			productName = "iOS Demo Tests";
+			productReference = 839BA61A1B9E238D0036FF9E /* iOS Demo Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -226,6 +393,10 @@
 				TargetAttributes = {
 					835E6CBD1B743D02009CAB53 = {
 						CreatedOnToolsVersion = 6.1.1;
+					};
+					839BA6191B9E238D0036FF9E = {
+						CreatedOnToolsVersion = 6.1.1;
+						TestTargetID = 835E6CBD1B743D02009CAB53;
 					};
 				};
 			};
@@ -243,6 +414,7 @@
 			projectRoot = "";
 			targets = (
 				835E6CBD1B743D02009CAB53 /* iOS Demo */,
+				839BA6191B9E238D0036FF9E /* iOS Demo Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -252,8 +424,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				835E6CF51B743E70009CAB53 /* fileheader.txt in Resources */,
 				835E6CD21B743D02009CAB53 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		839BA6181B9E238D0036FF9E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,21 +444,49 @@
 			files = (
 				835E6D061B7472FA009CAB53 /* DemoNetworkManager.m in Sources */,
 				835E6CF31B743DF3009CAB53 /* Singletons.m in Sources */,
+				83CB47191B98EFB800BE71EA /* NKCallBehaviorURLRequest.m in Sources */,
 				835E6CCA1B743D02009CAB53 /* iOS_Demo.xcdatamodeld in Sources */,
 				835E6CF91B743F06009CAB53 /* CommonSingletons.m in Sources */,
 				8349F5F61B7BED5E00BEB28F /* AbstractRemoteFetchExecutor.m in Sources */,
+				83CDA7971B972E1E000E4645 /* JSONHelpers.m in Sources */,
 				8349F5F91B7BEDF400BEB28F /* NetworkTransactionManager.m in Sources */,
 				835E6CC41B743D02009CAB53 /* main.m in Sources */,
+				83CB471C1B98EFCE00BE71EA /* NKNetworkManager.m in Sources */,
 				835E6D0C1B747900009CAB53 /* NetworkCall.m in Sources */,
 				835E6D091B74745E009CAB53 /* NetworkManagerStatistics.m in Sources */,
+				83E589AE1B925506007C2EEC /* UIHelpers.m in Sources */,
 				8349F5FE1B7BF0E800BEB28F /* AbstractDataObjectManager.m in Sources */,
 				831E96FF1B751BE5000DA094 /* CommonLayerDemo.m in Sources */,
+				837C91E31BA0CAD8005016E6 /* WeakTargetTimer.m in Sources */,
 				835E6CF01B743DC2009CAB53 /* CoreDataCoordinator.m in Sources */,
+				8315F9901B9E768C007C8384 /* NKURLConnectionBridge.m in Sources */,
 				835E6D001B747182009CAB53 /* Logging.m in Sources */,
+				837C91E61BA0D2B2005016E6 /* SharedThreadPool.m in Sources */,
+				83E589B71B925720007C2EEC /* UIHelpersSwift.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		839BA6161B9E238D0036FF9E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				838E57781B9E3B1F0067FE07 /* OverrideURLConnectionTester.m in Sources */,
+				838E57731B9E25410067FE07 /* TestNetworkTransactionManager.m in Sources */,
+				838E57751B9E3A820067FE07 /* TestAbstractNetworkManagerWithNSURLConnection.m in Sources */,
+				8323491A1BA33C7F000E97A5 /* TestSharedThreadPool.m in Sources */,
+				8315F9941B9E78B1007C8384 /* NKURLConnectionBridgeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		839BA6211B9E238D0036FF9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 835E6CBD1B743D02009CAB53 /* iOS Demo */;
+			targetProxy = 839BA6201B9E238D0036FF9E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		835E6CE21B743D02009CAB53 /* Debug */ = {
@@ -365,9 +571,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"TESTING=1",
+				);
 				INFOPLIST_FILE = "iOS Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "iOS Demo/iOS Demo-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -375,9 +589,52 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"RELEASE=1",
+					"TESTING=1",
+				);
 				INFOPLIST_FILE = "iOS Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "iOS Demo/iOS Demo-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		839BA6231B9E238D0036FF9E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"TESTING=1",
+				);
+				INFOPLIST_FILE = "iOS Demo Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iOS Demo.app/iOS Demo";
+			};
+			name = Debug;
+		};
+		839BA6241B9E238D0036FF9E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "TESTING=1";
+				INFOPLIST_FILE = "iOS Demo Tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iOS Demo.app/iOS Demo";
 			};
 			name = Release;
 		};
@@ -398,6 +655,15 @@
 			buildConfigurations = (
 				835E6CE51B743D02009CAB53 /* Debug */,
 				835E6CE61B743D02009CAB53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		839BA6221B9E238D0036FF9E /* Build configuration list for PBXNativeTarget "iOS Demo Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				839BA6231B9E238D0036FF9E /* Debug */,
+				839BA6241B9E238D0036FF9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

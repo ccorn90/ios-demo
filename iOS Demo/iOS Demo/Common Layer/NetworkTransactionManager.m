@@ -8,6 +8,7 @@
 
 #import "NetworkTransactionManager.h"
 #import "Logging.h"
+#import "JSONHelpers.h"
 
 NSString* const LOGTAG_NTM = @"networktransaction";
 
@@ -96,7 +97,7 @@ NSString* const LOGTAG_NTM = @"networktransaction";
     
     [self sendRequestForWrapper:wrapper withData:jsonData isGetRequest:TRUE];
 }
--(void) post:(NSString*)url withData:(NSDictionary*)jsonData context:(id)context
+-(void) post:(NSString*)url withData:(NSDictionary*)jsonData
      success:(NetworkTransactionManagerSuccessHandler)successHandler
      failure:(NetworkTransactionManagerFailureHandler)failureHandler {
     
@@ -125,7 +126,9 @@ NSString* const LOGTAG_NTM = @"networktransaction";
         
         // Now cancel that wrapper's call and clean up:
         if(wrapper != nil) {
-            [self.networkManager cancelForDelegate:self withContext:wrapper];
+            if([self.networkManager respondsToSelector:@selector(cancelForDelegate:withContext:)]) {
+                [self.networkManager cancelForDelegate:self withContext:wrapper];
+            }
             [self cleanUpAfterCall:wrapper];
         }
     }
@@ -145,6 +148,9 @@ NSString* const LOGTAG_NTM = @"networktransaction";
                 
                 // Make a URLRequest and start the call:
                 NSMutableURLRequest* request = [self.networkManager buildURLRequest:wrapper.urlString forRequestType:(isGetRequest ? @"GET" : @"POST")];
+                request.HTTPBody = [JSONHelpers toData:jsonData];
+                
+                
                 [self.networkManager startNetworkCall:request withDelegate:self onMainThread:TRUE withTimeout:8.0 withNumRetries:3 withContext:wrapper];
             }
         }
@@ -176,6 +182,7 @@ NSString* const LOGTAG_NTM = @"networktransaction";
     _InternalCallbackWrapper* wrapper = nil;
     NSDictionary* json = nil;
     BOOL hadJSONError = FALSE;
+    NetworkManagerError verificationError = NetworkManagerErrorNoError;
     
     @synchronized (self) {
         if([self.allCallbackWrappers containsObject:context]) {
@@ -183,8 +190,14 @@ NSString* const LOGTAG_NTM = @"networktransaction";
             if(data != nil) {
                 json = [self decodeJSON:data];
                 
-                // if we had data but couldn't decode JSON, it's an error.
-                hadJSONError = TRUE;
+                // this will tell us if there was a verification error:
+                verificationError = [self verifyJSON:json];
+                
+                // if we had data but couldn't decode JSON, it's an error:
+                if(json == nil) {
+                    hadJSONError = TRUE;
+                }
+                
             }
             
             // Note, we don't need to do any cleanup because we'll do that in didFinish, below.
@@ -194,18 +207,19 @@ NSString* const LOGTAG_NTM = @"networktransaction";
     }
     
     if(wrapper != nil) {
-        if(hadJSONError) {
+        if(hadJSONError || verificationError != NetworkManagerErrorNoError) {
             // We had a JSON deserialization error!  Call back:
             if(wrapper.delegate != nil) {
                 [wrapper.delegate networkTransactionManager:self didFail:wrapper.delegateContext
-                                               networkError:NetworkManagerErrorNoError
+                                               networkError:verificationError
                                                  httpStatus:200
-                                        jsonDecodingFailure:YES
-                                                   jsonData:json];
+                                        jsonDecodingFailure:TRUE
+                                                   jsonData:json
+                                                    rawData:(NSData*)data];
             }
             
             if(wrapper.failureHandler != NULL) {
-                wrapper.failureHandler(NetworkManagerErrorNoError, 200, YES, json);
+                wrapper.failureHandler(verificationError, 200, YES, json);
             }
         } else {
             // Successfully recieved JSON!  We'll call back to the delegate and the success block
@@ -244,7 +258,8 @@ NSString* const LOGTAG_NTM = @"networktransaction";
                                            networkError:errorType
                                              httpStatus:httpStatus
                                     jsonDecodingFailure:NO
-                                               jsonData:json];
+                                               jsonData:json
+                                                rawData:data];
         }
         
         if(wrapper.failureHandler != NULL) {
@@ -273,20 +288,17 @@ NSString* const LOGTAG_NTM = @"networktransaction";
     NSDictionary* json = nil;
     
     if(data != nil) {
-        NSError* error = nil;
-        
-        json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-        
-        // Not much possible to do except return nil and log if there's an error:
-        if(error != nil || json == nil) {
-            LogE(LOGTAG_NTM, @"\n\n\n******************* JSON DESERIALIZATION ERROR *******************\n\nCould not deserialize JSON object - error %@\n\n******************* JSON DESERIALIZATION ERROR *******************\n\n\n", error);
-            json = nil;
-        }
+        json = [JSONHelpers toJSON:data];
     }
     
     return json;
 }
 
+
+// Helper for subclassers to override if they want JSON content validation to determine success or failure:
+-(NetworkManagerError) verifyJSON:(NSDictionary*)json {
+    return NetworkManagerErrorNoError;
+}
 
 
 // CALL THIS FROM A SYNCHRONIZED BLOCK!!

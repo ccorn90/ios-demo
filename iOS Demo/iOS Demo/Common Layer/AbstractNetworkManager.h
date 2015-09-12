@@ -47,6 +47,14 @@
 @optional
 -(void) cancelForDelegate:(id<NetworkManagerDelegate>)delegate withContext:(id)context;
 
+
+
+// This is a hook for testing.  It allows the test framework to specify a class for the
+// networkManager to use instead of NSURLConnection for its insides.  Returns FALSE if
+// the input was ignored.
+@required
+-(BOOL) overrideTestingURLConnectionClass:(Class)testingURLConnectionClass;
+
 @end
 
 
@@ -62,6 +70,14 @@
 // callback instead.
 @optional
 -(void) networkManager:(id<AbstractNetworkManager>)networkManager didStartCall:(id)context;
+
+
+// Called when the network manager redirects a call.  You can cache the returned
+// URL if you want to make subsequent hits at the deep level as opposed to the top level.
+@optional
+-(void) networkManager:(id<AbstractNetworkManager>)networkManager didRedirectForContext:(id)context
+                newURL:(NSString*)newURL httpStatus:(int)httpStatus;
+
 
 // Called when the network manager loads the header for the remote resource.
 // This allows the delegate to choose to cancel the call if one of the the

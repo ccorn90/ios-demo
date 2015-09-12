@@ -43,4 +43,11 @@
 -(void) networkCallDidFinishLoading:(NetworkCall*)call;
 -(void) networkCall:(NetworkCall*)call didFailWithError:(NSError*)error;
 
+
+// This is a hook for testing.  It allows the test framework to specify a class for the
+// networkManager to use instead of NSURLConnection for its insides.  Returns FALSE if
+// the input was ignored.
+-(BOOL) overrideTestingURLConnectionClass:(Class)testingURLConnectionClass;
+
+
 @end

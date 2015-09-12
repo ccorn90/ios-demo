@@ -11,6 +11,8 @@
 
 #import "CommonSingletons.h"
 #import "CommonLayerDemo.h"
+#import "NKNetworkManager.h"
+#import "NKURLConnectionBridge.h"
 
 // TASK: Should this be __weak?  I dunno yet... it seems like it would be
 // held weakly by the system, so we'd need to retain it.  But then, it
@@ -66,9 +68,26 @@ Singletons* __globalDelegateRef = nil;
     
     
     // Start the demo.  We'll do this asynchronously after 100ms so the main thread can continue right now.
-    self.demo = [[CommonLayerDemo alloc] init];
+    /*self.demo = [[CommonLayerDemo alloc] init];
     dispatch_after(0.1, dispatch_get_main_queue(), ^{
         [self.demo start];
+    });*/
+    
+    static NKNetworkManager* networkMgr = nil;
+    networkMgr = [[NKNetworkManager alloc] initWithConnectionBridge:[[NKDefaultURLConnectionBridge alloc] init]];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        networkMgr = nil;
+    
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            networkMgr = [[NKNetworkManager alloc] initWithConnectionBridge:[[NKDefaultURLConnectionBridge alloc] init]];
+            NKNetworkManager* networkMgr2 = [[NKNetworkManager alloc] initWithConnectionBridge:[[NKDefaultURLConnectionBridge alloc] init]];
+            
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                networkMgr = nil;
+            });
+        });
     });
     
     return YES;
